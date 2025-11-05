@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "Mozhimai.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "Mozhimai.py"
+    }
+  ]
+}
