@@ -73,7 +73,7 @@ st.markdown("<h1 style='color:#002E4B;text-align:center;'>Welcome to MOZHIMAI </
 st.markdown("<h3 style='color:#F08729;text-align:center;'>Your bridge to the Tamizh world!""</h3>", unsafe_allow_html=True)
 
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 st.set_page_config(
     page_title="MOZHIMAI",
