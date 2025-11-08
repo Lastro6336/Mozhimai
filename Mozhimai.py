@@ -1,19 +1,86 @@
 import streamlit as st
 from openai import OpenAI
 import time
+import base64
+import requests 
 
-# --- Configuration and Styling ---
+def add_bg(image_source):
+    """Add background image from either local file or online URL."""
+    try:
+        if image_source.startswith("http"):
+            data = requests.get(image_source).content
+        else:
+            with open(image_source, "rb") as f:
+                data = f.read()
+        encoded = base64.b64encode(data).decode()
 
-# Define your API key. In a real application, use st.secrets or environment variables.
-# Using the key provided in your initial prompt for demonstration:
-OPENAI_API_KEY = "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"
+        page_bg = f"""
+        <style>
+        html, body, [data-testid="stAppViewContainer"] {{
+            height: 100%;
+            width: 100%;
+            background: url("data:image/png;base64,{encoded}") no-repeat center center fixed;
+            background-size: cover;
+        }}
+
+        [data-testid="stMainBlockContainer"],
+        [data-testid="stVerticalBlock"],
+        [data-testid="stHorizontalBlock"],
+        [data-testid="stApp"] {{
+            background: transparent !important;
+        }}
+
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stSidebar"] {{
+            background: transparent;
+        }}
+        </style>
+        """
+        st.markdown(page_bg, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Could not load background image: {e}")
+        
+        
+add_bg("https://raw.githubusercontent.com/Lastro6336/Mozhimai/main/bg_4.jpg")
+
+
+button_style = """
+    <style>
+    .center-button {
+        display: flex;
+        justify-content: center;
+    }
+    div.stButton > button:first-child {
+        background-color: #002E4B;
+        color: #F08729;
+        font-size: 20px;
+        padding: 15px 40px;
+        border-radius: 12px;
+        border: none;
+        transition: 0.3s;
+    }
+    }
+    </style>
+    """ 
+st.markdown(button_style , unsafe_allow_html= True)
+
+
+
+
+st.markdown("<h1 style='color:#002E4B;text-align:center;'>Welcome to MOZHIMAI </h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='color:#F08729;text-align:center;'>Your bridge to the Tamizh world!""</h3>", unsafe_allow_html=True)
+
+
+OPENAI_API_KEY = "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"
 
 st.set_page_config(
     page_title="MOZHIMAI",
-    page_icon="🤖" # Using an emoji as a placeholder
+    page_icon="logo only.jpg" 
 )
 
-# Custom CSS for button and result box styling (from your original code, simplified)
+
 custom_styles = """
     <style>
     /* Force main app background to ensure visibility if user's browser is dark mode */
@@ -24,7 +91,7 @@ custom_styles = """
     /* Button Styling */
     .stButton > button:first-child {
         background-color: #002E4B;
-        color: #F08729;
+        color: #FD8419;
         font-size: 20px;
         padding: 15px 40px;
         border-radius: 12px;
@@ -53,16 +120,15 @@ custom_styles = """
         transition: all 0.25s ease-in-out;
     }
 
-    /* Placeholder color */
+    
     div[data-testid="stTextInput"] > div > div > input::placeholder {
-        color: #F08729; /* Changed placeholder color for better contrast */
+        color: #FD8419; /* Changed placeholder color for better contrast */
         opacity: 0.8;
     }
     
-    /* Custom Result Box Class */
     .custom-result-box {
-        background-color: #002E4B; /* Dark Blue Background */
-        color: #F08729;          /* Orange Text */
+        background-color: #002E4B; 
+        color: #FD8419;          
         border-left: 5px solid #F08729;
         border-radius: 8px;
         padding: 15px;
@@ -78,7 +144,6 @@ st.markdown(custom_styles, unsafe_allow_html=True)
 
 # --- OpenAI Client and Correction Function ---
 
-@st.cache_resource
 def get_openai_client():
     """Initializes and caches the OpenAI client."""
     return OpenAI(api_key=OPENAI_API_KEY)
@@ -104,7 +169,7 @@ def correct(string):
         a = response.choices[0].message.content.strip()
         
         # --- Step 2: Select Correction Prompt ---
-        # Note: Changed 'grammer' to 'grammar'
+        
         prompt_2 = f"check for spelling, grammar mistake in the tamil code switched sentence and correct them and give only corrected sentence as tamil output:\n\n{text}"
         prompt_3 = f"check for spelling, grammar mistake in the tamil code mixed sentence and correct them and give only corrected sentence as tamil output:\n\n{text}"
         prompt_4 = f"check for spelling, grammar mistake in the tamil Casual Code-Switching sentence and correct them and give only corrected sentence as tamil output:\n\n{text}"
@@ -154,9 +219,6 @@ def go_to_spell_corrector():
 
 # --- Home Page ---
 if st.session_state.page == "home":
-    
-    st.markdown("<h1 style='color:#002E4B;text-align:center;'>Welcome to MOZHIMAI </h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='color:#F08729;text-align:center;'>Your bridge to the Tamil world!</h3>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1.45, 2, 1])
     with col2:
